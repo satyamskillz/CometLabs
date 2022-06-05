@@ -1,10 +1,22 @@
 var debug = require("debug")("server:server");
+var cookieParser = require("cookie-parser");
 var createError = require("http-errors");
 var express = require("express");
 var dotenv = require("dotenv");
+var logger = require("morgan");
 var http = require("http");
 var app = express();
 dotenv.config();
+
+// Middlewares
+app.use(logger("dev"));
+app.use(express.json());
+app.use(cookieParser());
+app.use(
+	express.urlencoded({
+		extended: true,
+	})
+);
 
 // Custom Error handler
 app.use((err, req, res, next) => {
