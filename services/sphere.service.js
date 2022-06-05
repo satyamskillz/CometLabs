@@ -100,3 +100,68 @@ module.exports.deleteProblem = async (problemId) => {
 		}
 	}
 };
+
+/*
+	function name: updateProblem
+	description: this function used to update question in sphere database
+	parameters: {
+		problemId: String,
+		newProblemData: {
+			name: String,
+			body: String,
+			masterJudgeId: String,
+		}
+	}
+	return: {
+		isUpdated: Boolean,
+		message: String,
+	}
+*/
+
+module.exports.updateProblem = async (problemId, newProblemData) => {
+	try {
+		await axios.put(
+			process.env.SPHERE_ENDPOINT +
+				"/api/v4/problems/" +
+				problemId +
+				"?access_token=" +
+				process.env.SPHERE_TOKEN,
+			JSON.stringify(newProblemData),
+			{ headers: { "Content-Type": "application/json" } }
+		);
+
+		return {
+			isUpdated: true,
+			message: "Question updated successfull",
+		};
+	} catch (error) {
+		console.log(error);
+
+		if (error.response.status === 400) {
+			return {
+				isUpdated: false,
+				message: error.response.data.message,
+			};
+		} else if (error.response.status === 401) {
+			return {
+				isUpdated: false,
+				message: error.response.data.message,
+			};
+		} else if (error.response.status === 403) {
+			return {
+				isUpdated: false,
+				message: error.response.data.message,
+			};
+		} else if (error.response.status === 404) {
+			return {
+				isUpdated: false,
+				message: error.response.data.message,
+			};
+		} else {
+			return {
+				isUpdated: false,
+				message: "Connection error, please try again later",
+			};
+		}
+	}
+};
