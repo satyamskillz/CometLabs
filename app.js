@@ -38,6 +38,12 @@ app.use(
 	})
 );
 
+// Apis pointing to the different routes
+app.use("/api/user", require("./routers/user.router"));
+app.use("/api/admin", require("./routers/admin.router"));
+app.use("/api/problem", require("./routers/problem.router"));
+app.use("/api/solution", require("./routers/solution.router"));
+
 // Custom Error handler
 app.use((err, req, res, next) => {
 	console.log(err);
