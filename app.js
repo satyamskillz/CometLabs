@@ -1,12 +1,26 @@
 var debug = require("debug")("server:server");
 var cookieParser = require("cookie-parser");
 var createError = require("http-errors");
+const mongoose = require("mongoose");
 var express = require("express");
 var dotenv = require("dotenv");
 var logger = require("morgan");
 var http = require("http");
 var app = express();
 dotenv.config();
+
+// connect to monogo altas db
+mongoose
+	.connect(process.env.MONGO_URI, {
+		useNewUrlParser: true,
+		useUnifiedTopology: true,
+	})
+	.then(() => {
+		console.log("Connected to the database ");
+	})
+	.catch((err) => {
+		console.error(`Error connecting to the database. n${err}`);
+	});
 
 // cors middleware
 app.use((req, res, next) => {
