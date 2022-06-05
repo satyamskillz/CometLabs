@@ -24,17 +24,12 @@ mongoose
 
 // cors middleware
 app.use((req, res, next) => {
-	res.setHeader(
-		"Access-Control-Allow-Headers",
-		"Content-Type,x-token, x-refresh-token"
-	);
 	if (process.env.NODE_ENV === "production") {
 		res.setHeader("Access-Control-Allow-Origin", "http://localhost");
 	} else {
 		res.setHeader("Access-Control-Allow-Origin", process.env.FRONTEND_URL);
 	}
 	res.setHeader("Access-Control-Allow-Credentials", true);
-	res.setHeader("Access-Control-Expose-Headers", "x-token, x-refresh-token");
 	res.setHeader(
 		"Access-Control-Allow-Methods",
 		"GET, POST, OPTIONS, PUT, DELETE"
