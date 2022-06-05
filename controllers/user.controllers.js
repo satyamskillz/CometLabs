@@ -98,3 +98,69 @@ module.exports.register = async (req, res) => {
 		});
 	}
 };
+
+/*
+	this controller used to login user
+	request body: {
+		email: String,
+		password: String,
+	}
+	response: {
+		message: String,
+		data: {
+			email: String,
+			token: String,
+		}
+	}
+*/
+module.exports.login = async (req, res) => {
+	try {
+		const { email, password } = req.body;
+
+		// check weather request body is vaild or not
+		if (!email || !password) {
+			return res.status(400).json({
+				message: "email, password is required",
+			});
+		}
+
+		// check weather user is existed or not
+		const user = await userModel.findOne({ email });
+
+		if (!user) {
+			return res.status(400).json({
+				message: "user not existed",
+			});
+		}
+
+		// compare password
+		const isMatched = await passwordService.comparePassword(
+			password,
+			user.password
+		);
+
+		if (!isMatched) {
+			return res.status(400).json({
+				message: "password didn't match",
+			});
+		}
+
+		// create JWT token
+		const token = await tokenService.createAccessToken(user);
+
+		return res.status(200).json({
+			message: "login successfull",
+			data: {
+				email: user.email,
+				token: token,
+			},
+		});
+	} catch (error) {
+		logger.error(error);
+
+		return res.status(500).json({
+			message: "login failed",
+			error: error,
+		});
+	}
+};

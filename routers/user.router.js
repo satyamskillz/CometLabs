@@ -8,4 +8,7 @@ router.get("/", userControllers.testController);
 // Register user api
 router.post("/v1/register", userControllers.register);
 
+// Login user api
+router.post("/v1/login", userControllers.login);
+
 module.exports = router;
