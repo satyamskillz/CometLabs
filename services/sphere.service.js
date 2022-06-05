@@ -47,3 +47,56 @@ module.exports.addProblem = async (problemData) => {
 		}
 	}
 };
+
+/*
+	function name: deleteProblem
+	description: this function used to delete question from sphere database
+	parameters: {
+		problemId: String,
+	}
+	return: {
+		isDeleted: Boolean,
+		message: String,
+	}
+*/
+
+module.exports.deleteProblem = async (problemId) => {
+	try {
+		await axios.delete(
+			process.env.SPHERE_ENDPOINT +
+				"/api/v4/problems/" +
+				problemId +
+				"?access_token=" +
+				process.env.SPHERE_TOKEN
+		);
+
+		return {
+			isDeleted: true,
+			message: "Question deleted successfull",
+		};
+	} catch (error) {
+		console.log(error);
+
+		if (error.response.status === 401) {
+			return {
+				isDeleted: false,
+				message: error.response.data.message,
+			};
+		} else if (error.response.status === 403) {
+			return {
+				isDeleted: false,
+				message: error.response.data.message,
+			};
+		} else if (error.response.status === 404) {
+			return {
+				isDeleted: false,
+				message: error.response.data.message,
+			};
+		} else {
+			return {
+				isDeleted: false,
+				message: "Connection error, please try again later",
+			};
+		}
+	}
+};
