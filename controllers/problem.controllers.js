@@ -110,3 +110,70 @@ module.exports.deleteQuestion = async (req, res) => {
 		});
 	}
 };
+
+/*
+    this controller used to update question by admin
+    parameters: {
+        questionId: String,
+        name: String,
+        body: String,
+        masterjudgeId: Number,
+    }
+    response: {
+        message: String,
+    }
+*/
+
+module.exports.updateQuestion = async (req, res) => {
+	try {
+		const { questionId, name, body, masterjudgeId } = req.body;
+
+		// check weather request body is vaild or not
+		if (!questionId || !name || !body || !masterjudgeId) {
+			return res.status(400).json({
+				message:
+					"questionId, name, description, masterJudgeId is required",
+			});
+		}
+
+		// get question from mongo database
+		const question = await questionModel.findById(questionId);
+
+		// update question in sphere problem database
+		const { isUpdated, message } = await sphereService.updateProblem(
+			question.problemId,
+			req.body
+		);
+
+		if (!isUpdated) {
+			return res.status(400).json({
+				message: message,
+			});
+		}
+
+		// update question in mongo database
+		const newQuestion = await questionModel.findOneAndUpdate(
+			{
+				_id: questionId,
+			},
+			{
+				name,
+				body,
+				masterjudgeId,
+			}
+		);
+
+		return res.status(200).json({
+			message: "Question updated successfull",
+			data: {
+				questionId: newQuestion._id,
+			},
+		});
+	} catch (error) {
+		logger.error(error);
+		return res.status(500).json({
+			message: "Failed to update question",
+			error: error,
+		});
+	}
+};
