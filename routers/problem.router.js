@@ -17,4 +17,11 @@ router.delete(
 	problemController.deleteQuestion
 );
 
+// This api is used to update question by admin
+router.put(
+	"/v1/update-question",
+	AuthenticationAdmin,
+	problemController.updateQuestion
+);
+
 module.exports = router;
