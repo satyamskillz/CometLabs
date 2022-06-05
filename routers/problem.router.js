@@ -10,4 +10,11 @@ router.post(
 	problemController.addQuestion
 );
 
+// This api is used to delete question by admin
+router.delete(
+	"/v1/delete-question/:questionId",
+	AuthenticationAdmin,
+	problemController.deleteQuestion
+);
+
 module.exports = router;
