@@ -1,9 +1,13 @@
+var AuthenticationAdmin = require("../middlewares/AuthenticationAdmin");
+var problemController = require("../controllers/problem.controllers");
 var express = require("express");
 var router = express.Router();
 
-/* GET home page. */
-router.get("/", function (req, res, next) {
-	res.render("index", { title: "Express" });
-});
+// This api is used to add question by admin
+router.post(
+	"/v1/add-question",
+	AuthenticationAdmin,
+	problemController.addQuestion
+);
 
 module.exports = router;
