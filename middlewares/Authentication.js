@@ -25,7 +25,6 @@ const Authentication = async (req, res, next) => {
 	try {
 		// Verify the access token
 		const decoded = jwt.verify(token, process.env.JWT_SECRET_1);
-		req.user = decoded;
 
 		// Check if the user exists in the database
 		const user = await userModel.findOne({
@@ -37,12 +36,7 @@ const Authentication = async (req, res, next) => {
 			});
 		}
 
-		// Check if the user has admin role or not
-		if (user.isAdmin) {
-			req.isAdmin = true;
-		} else {
-			req.isAdmin = false;
-		}
+		req.user = user;
 	} catch (err) {
 		return res.status(401).json({
 			message: "Authentication failed",
