@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const SchemaTypes = mongoose.Schema.Types;
 const testCaseSchema = new mongoose.Schema(
 	{
 		input: {
@@ -10,8 +10,21 @@ const testCaseSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
-		problemId: {
+		number: {
 			type: Number,
+			required: true,
+		},
+		judgeId: {
+			type: Number,
+			required: true,
+		},
+		timelimit: {
+			type: Number,
+			required: true,
+		},
+		questionId: {
+			type: SchemaTypes.ObjectId,
+			ref: "Questions",
 			required: true,
 		},
 	},
