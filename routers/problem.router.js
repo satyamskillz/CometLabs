@@ -32,4 +32,18 @@ router.post(
 	problemController.addTestCase
 );
 
+// This api is used to get all question
+router.get(
+	"/v1/all-questions",
+	Authentication,
+	problemController.getAllQuestions
+);
+
+// This api is used to get question by id
+router.get(
+	"/v1/one-question/:questionId",
+	Authentication,
+	problemController.getOneQuestion
+);
+
 module.exports = router;
