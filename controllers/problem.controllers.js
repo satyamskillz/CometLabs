@@ -42,6 +42,7 @@ module.exports.addQuestion = async (req, res) => {
 			body,
 			problemId,
 			masterjudgeId,
+			creator: req.user._id,
 		}).save();
 
 		return res.status(200).json({
@@ -112,7 +113,7 @@ module.exports.deleteQuestion = async (req, res) => {
 };
 
 /*
-    this controller used to update question by admin
+	this controller used to update question by admin
     parameters: {
         questionId: String,
         name: String,
@@ -123,7 +124,6 @@ module.exports.deleteQuestion = async (req, res) => {
         message: String,
     }
 */
-
 module.exports.updateQuestion = async (req, res) => {
 	try {
 		const { questionId, name, body, masterjudgeId } = req.body;
