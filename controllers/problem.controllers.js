@@ -254,3 +254,97 @@ module.exports.addTestCase = async (req, res) => {
 		});
 	}
 };
+
+/*
+	this controller used to get all questions from mongo database
+*/
+module.exports.getAllQuestions = async (req, res) => {
+	try {
+		// find question by id and it list of testcases from mongo database
+		const questions = await questionModel.aggregate([
+			{
+				$lookup: {
+					from: "testcases",
+					localField: "_id",
+					foreignField: "questionId",
+					as: "testcases",
+				},
+			},
+			{ $unwind: "$testcases" },
+			{
+				$group: {
+					_id: "$_id",
+					name: { $first: "$name" },
+					body: { $first: "$body" },
+					creator: { $first: "$creator" },
+					testCases: {
+						$push: "$testcases",
+					},
+				},
+			},
+		]);
+
+		return res.status(200).json({
+			message: "Questions fetched successfull",
+			data: {
+				questions,
+			},
+		});
+	} catch (error) {
+		logger.error(error);
+		return res.status(500).json({
+			message: "Failed to get questions",
+			error: error,
+		});
+	}
+};
+
+/*
+	this controller used to get question by id from mongo database
+*/
+module.exports.getOneQuestion = async (req, res) => {
+	try {
+		const { questionId } = req.params;
+
+		// check weather request body is vaild or not
+		if (!questionId) {
+			return res.status(400).json({
+				message: "questionId is required",
+			});
+		}
+
+		// get qeustion from mongo database
+		var question = await questionModel.findById(questionId);
+
+		if (!question) {
+			return res.status(400).json({
+				message: "Question not found",
+			});
+		}
+
+		// get all testcases from mongo database
+		var testcases = await testCaseModel.find({ questionId });
+
+		if (!testcases) {
+			return res.status(400).json({
+				message: "Testcases not found",
+			});
+		}
+
+		// all testcases to question
+		question = { ...question._doc, testCases: testcases };
+
+		return res.status(200).json({
+			message: "Question fetched successfull",
+			data: {
+				question,
+			},
+		});
+	} catch (error) {
+		logger.error(error);
+		return res.status(500).json({
+			message: "Failed to get question",
+			error: error,
+		});
+	}
+};
