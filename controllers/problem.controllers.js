@@ -177,3 +177,80 @@ module.exports.updateQuestion = async (req, res) => {
 		});
 	}
 };
+
+/*
+	this controller used to add testcase in question by admin
+	request body: {
+		input: String,
+		output: String,
+		questionId: String,
+		timelimit: Number,
+		jugdeId: Number,
+	}
+	response: {
+		message: String,
+	}
+*/
+module.exports.addTestCase = async (req, res) => {
+	try {
+		const { input, output, questionId, timelimit, judgeId } = req.body;
+
+		// check weather request body is vaild or not
+		if (!input || !output || !questionId || !timelimit || !judgeId) {
+			return res.status(400).json({
+				message:
+					"input, output, questionId, timelimit, judgeId is required",
+			});
+		}
+
+		// Get problemId from questions
+		const question = await questionModel.findById(questionId);
+
+		if (!question) {
+			return res.status(400).json({
+				message: "Question not found",
+			});
+		}
+
+		// add testcase to sphere problem database
+		const { testcaseNumber, message } = await sphereService.addTestCase(
+			question.problemId,
+			{
+				input,
+				output,
+				judgeId,
+				timelimit,
+			}
+		);
+
+		if (!testcaseNumber) {
+			return res.status(400).json({ message });
+		}
+
+		// add testcase to mongo database
+		const testcase = await testCaseModel({
+			input,
+			output,
+			judgeId,
+			timelimit,
+			questionId,
+			number: testcaseNumber,
+		}).save();
+
+		return res.status(200).json({
+			message: "Testcase added successfull",
+			data: {
+				testcase,
+			},
+		});
+	} catch (error) {
+		// logger.error(error);
+
+		console.log(error);
+
+		return res.status(500).json({
+			message: "Failed to add testcase",
+			error: error,
+		});
+	}
+};
