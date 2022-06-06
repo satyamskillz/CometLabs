@@ -1,5 +1,6 @@
 var AuthenticationAdmin = require("../middlewares/AuthenticationAdmin");
 var problemController = require("../controllers/problem.controllers");
+var Authentication = require("../middlewares/Authentication");
 var express = require("express");
 var router = express.Router();
 
@@ -22,6 +23,13 @@ router.put(
 	"/v1/update-question",
 	AuthenticationAdmin,
 	problemController.updateQuestion
+);
+
+// This api is used to add test case to problem by admin
+router.post(
+	"/v1/add-testcase",
+	AuthenticationAdmin,
+	problemController.addTestCase
 );
 
 module.exports = router;
