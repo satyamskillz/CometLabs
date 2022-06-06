@@ -292,3 +292,64 @@ module.exports.submitSolution = async (submissionData) => {
 		}
 	}
 };
+
+/**
+ * @discription this function used to get submission status
+ *
+ * @param {String} submissionId
+ * @returns {Object}
+ *
+ * @example getSubmissionStatus('')
+ *
+ * @return {String} return.message
+ * @return {Ojecct} return.submissionData
+ *
+ *
+ * @author Satyam Sharma < satyamskillz@gmail.com >
+ *
+ * @createdOn: 06-June-2022
+ *
+ * @version: 1.0.0
+ *
+ * @deprecated: No
+ *
+ */
+
+module.exports.getSubmissionStatus = async (submissionId) => {
+	try {
+		const response = await axios.get(
+			process.env.SPHERE_ENDPOINT +
+				"/api/v4/submissions/" +
+				submissionId +
+				"?access_token=" +
+				process.env.SPHERE_TOKEN
+		);
+
+		const status = response.data.result.status;
+
+		return {
+			message: status.name,
+			submissionData: response.data,
+		};
+	} catch (error) {
+		console.log(error.response);
+
+		if (
+			error.response.status === 401 ||
+			error.response.status === 403 ||
+			error.response.status === 404
+		) {
+			return {
+				isSubmitted: false,
+				message: error.response.data.message,
+				submissionData: error.response.data,
+			};
+		} else {
+			return {
+				isSubmitted: false,
+				message: "Connection error, please try again later",
+				submissionData: null,
+			};
+		}
+	}
+};
