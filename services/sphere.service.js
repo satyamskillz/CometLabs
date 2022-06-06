@@ -226,3 +226,69 @@ module.exports.addTestCase = async (problemId, testCaseData) => {
 		}
 	}
 };
+
+/**
+ * @description this function used to update test case in sphere database
+ *
+ * @param {String} submissionData.problemId
+ * @param {String} submissionData.language
+ * @param {String} submissionData.source
+ *
+ * @returns {Object} *
+ *
+ * @example summitSolution({ problemId: '', language: '', source: '' })
+ *
+ * @return {Boolean} return.isSubmitted
+ * @return {String} return.message
+ * @return {Ojecct} return.data
+ *
+ * @author Satyam Sharma < satyamskillz@gmail.com >
+ *
+ * @createdOn: 06-June-2022
+ *
+ * @version: 1.0.0
+ *
+ * @deprecated: No
+ */
+
+module.exports.submitSolution = async (submissionData) => {
+	try {
+		const response = await axios.post(
+			process.env.SPHERE_ENDPOINT +
+				"/api/v4/submissions?access_token=" +
+				process.env.SPHERE_TOKEN,
+			JSON.stringify(submissionData),
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+		return {
+			isSubmitted: true,
+			message: "Test case updated successfull",
+			data: response.data,
+		};
+	} catch (error) {
+		// console.log(error);
+
+		if (
+			error.response.status === 400 ||
+			error.response.status === 401 ||
+			error.response.status === 403 ||
+			error.response.status === 404
+		) {
+			return {
+				isSubmitted: false,
+				message: error.response.data.message,
+				data: error.response.data,
+			};
+		} else {
+			return {
+				isSubmitted: false,
+				message: "Connection error, please try again later",
+				data: null,
+			};
+		}
+	}
+};
