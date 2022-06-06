@@ -1,5 +1,6 @@
 const axios = require("axios").default;
 const logger = require("../logger");
+
 /*
     function name: addProblem
     description: this function used to add question to sphere database
@@ -12,7 +13,6 @@ const logger = require("../logger");
         id: String,
     }
 */
-
 module.exports.addProblem = async (problemData) => {
 	try {
 		const response = await axios.post(
@@ -59,7 +59,6 @@ module.exports.addProblem = async (problemData) => {
 		message: String,
 	}
 */
-
 module.exports.deleteProblem = async (problemId) => {
 	try {
 		await axios.delete(
@@ -117,7 +116,6 @@ module.exports.deleteProblem = async (problemId) => {
 		message: String,
 	}
 */
-
 module.exports.updateProblem = async (problemId, newProblemData) => {
 	try {
 		await axios.put(
@@ -161,6 +159,69 @@ module.exports.updateProblem = async (problemId, newProblemData) => {
 			return {
 				isUpdated: false,
 				message: "Connection error, please try again later",
+			};
+		}
+	}
+};
+
+/*
+	function name: addTestCase
+	description: this function used to add test case to sphere database
+	parameter:{ 
+		problemId: String,
+		testCaseData: {
+			input: String,
+			output: String,
+			judgeId: Number,
+			timelimit: Number,
+		}
+	}
+	return: {
+		message: String,
+		testcaseNumber: Number,
+	}
+*/
+module.exports.addTestCase = async (problemId, testCaseData) => {
+	try {
+		const response = await axios.post(
+			process.env.SPHERE_ENDPOINT +
+				"/api/v4/problems/" +
+				problemId +
+				"/testcases?access_token=" +
+				process.env.SPHERE_TOKEN,
+			JSON.stringify(testCaseData),
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+		let data = response.data;
+
+		return {
+			message: "Test case added successfull",
+			testcaseNumber: data.number,
+		};
+	} catch (error) {
+		if (error.response.status === 400) {
+			return {
+				message: error.response.data.message,
+				testcaseNumber: null,
+			};
+		} else if (error.response.status === 401) {
+			return {
+				message: error.response.data.message,
+				testcaseNumber: null,
+			};
+		} else if (error.response.status === 403) {
+			return {
+				message: error.response.data.message,
+				testcaseNumber: null,
+			};
+		} else {
+			return {
+				message: "Connection error, please try again later",
+				testcaseNumber: null,
 			};
 		}
 	}
